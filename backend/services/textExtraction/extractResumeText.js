@@ -9,8 +9,13 @@
  *  3. Always return a confidence flag so low-quality parses can be routed to manual review
  *     instead of silently trusting garbage output.
  *
- * npm install pdf-parse mammoth tesseract.js pdf-poppler
- * (pdf-poppler requires poppler-utils installed on the host machine for pdftoppm)
+ * npm install pdf-parse mammoth tesseract.js
+ *
+ * OCR fallback for scanned PDFs is currently disabled: it previously used
+ * pdf-poppler to rasterize pages, but that package hard-exits the whole
+ * process on any platform other than Windows/Mac (including Linux, e.g.
+ * Render), which isn't viable for deployment. Direct-text PDFs and DOCX are
+ * unaffected. See ocrPdfPages() below.
  */
 
 const fs = require("fs");
@@ -18,7 +23,6 @@ const path = require("path");
 const pdfParse = require("pdf-parse");
 const mammoth = require("mammoth");
 const Tesseract = require("tesseract.js");
-const pdfPoppler = require("pdf-poppler");
 
 const MIN_ACCEPTABLE_CHARS = 200; // below this, assume the PDF has no real text layer
 
@@ -34,30 +38,12 @@ async function extractFromPdfDirect(filePath) {
 }
 
 async function ocrPdfPages(filePath) {
-    // Render each PDF page to a PNG, then OCR each image.
-    const outDir = path.join(path.dirname(filePath), "__ocr_tmp__");
-    fs.mkdirSync(outDir, { recursive: true });
-
-    await pdfPoppler.convert(filePath, {
-        format: "png",
-        out_dir: outDir,
-        out_prefix: "page",
-        page: null, // all pages
-    });
-
-    const imageFiles = fs
-        .readdirSync(outDir)
-        .filter((f) => f.endsWith(".png"))
-        .sort();
-
-    let combinedText = "";
-    for (const img of imageFiles) {
-        const { data: { text } } = await Tesseract.recognize(path.join(outDir, img), "eng");
-        combinedText += text + "\n";
-    }
-
-    fs.rmSync(outDir, { recursive: true, force: true });
-    return combinedText;
+    // Disabled - see file header. Previously rendered each PDF page to a PNG
+    // via pdf-poppler, then OCR'd each image with Tesseract.
+    throw new Error(
+        "This PDF appears to be scanned/image-based and OCR fallback is currently unavailable. " +
+            "Please upload a PDF with selectable text, or a DOCX file."
+    );
 }
 
 function looksParsed(text) {

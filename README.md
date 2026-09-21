@@ -34,10 +34,10 @@ npm test
 ## How Scoring Works
 
 1. **Extraction.** The resume (PDF/DOCX) is parsed by an existing extraction
-   module: PDF text layer first, OCR (Tesseract) fallback for scanned PDFs.
-   It returns the extracted text plus a **confidence flag** (`high` /
-   `medium` / `low`) — `low` usually means the OCR fallback kicked in and the
-   text may be incomplete.
+   module: direct PDF text-layer extraction, or DOCX via `mammoth`. It
+   returns the extracted text plus a **confidence flag** (`high` / `low`).
+   OCR fallback for scanned/image-only PDFs is currently disabled (see
+   Deployment below) — those files return a clear error instead.
 
 2. **Chunking.** The resume text is split line-by-line into small chunks
    (bullet points, sentences). We chunk instead of embedding the whole
@@ -138,10 +138,15 @@ npm test
    have it), to lock CORS down from the wide-open local-dev default.
 4. Note: the free tier has an ephemeral filesystem and ~512MB RAM. That's
    fine here since nothing is persisted to disk beyond the lifetime of a
-   single request. OCR fallback for scanned PDFs requires the `poppler-utils`
-   system binary, which isn't present on Render's default Node image —
-   direct-text PDFs and DOCX files work regardless; OCR fallback for scanned
-   PDFs will fail until that's addressed (e.g. a custom Docker image).
+   single request.
+5. **OCR fallback is currently disabled.** It originally used `pdf-poppler`,
+   which calls `process.exit(1)` at import time on any platform other than
+   Windows/Mac — including Linux, which crashed the server immediately on
+   Render. Direct-text PDFs (`pdf-parse`) and DOCX (`mammoth`) are
+   unaffected; a scanned/image-only PDF now returns a clear error instead of
+   crashing the process. Re-enabling OCR would need a cross-platform PDF
+   rasterizer that doesn't depend on a native `canvas` build or platform
+   binaries — e.g. a custom Docker image with `poppler-utils` installed.
 
 **Frontend (Vercel):**
 1. New Project → connect this repo, set root directory to `frontend/`.
