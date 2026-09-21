@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import { getResumeDetail } from '../api';
+import { getResumeById } from '../storage';
 
 const VERDICT_CLASS = {
     'Strong Match': 'verdict-strong',
@@ -7,25 +6,8 @@ const VERDICT_CLASS = {
     'Weak Match': 'verdict-weak',
 };
 
-export default function CandidateDetailModal({ resumeId, onClose }) {
-    const [detail, setDetail] = useState(null);
-    const [error, setError] = useState(null);
-
-    useEffect(() => {
-        let cancelled = false;
-        setDetail(null);
-        setError(null);
-        getResumeDetail(resumeId)
-            .then((data) => {
-                if (!cancelled) setDetail(data);
-            })
-            .catch((err) => {
-                if (!cancelled) setError(err.message);
-            });
-        return () => {
-            cancelled = true;
-        };
-    }, [resumeId]);
+export default function CandidateDetailModal({ jobId, resumeId, onClose }) {
+    const detail = getResumeById(jobId, resumeId);
 
     return (
         <div className="modal-overlay" onClick={onClose}>
@@ -34,16 +16,15 @@ export default function CandidateDetailModal({ resumeId, onClose }) {
                     &times;
                 </button>
 
-                {error && <p className="error">{error}</p>}
-                {!detail && !error && <p>Loading...</p>}
+                {!detail && <p className="error">Candidate not found.</p>}
 
                 {detail && (
                     <>
-                        <h2>{detail.candidate_name || '(unnamed candidate)'}</h2>
+                        <h2>{detail.candidateName || '(unnamed candidate)'}</h2>
 
                         <div className={`verdict-banner ${VERDICT_CLASS[detail.recommendation.verdict]}`}>
                             <strong>{detail.recommendation.verdict}</strong>
-                            <span>{(detail.overall_score * 100).toFixed(0)}% overall skill match</span>
+                            <span>{(detail.overallScore * 100).toFixed(0)}% overall skill match</span>
                         </div>
 
                         <section>
@@ -80,7 +61,7 @@ export default function CandidateDetailModal({ resumeId, onClose }) {
                                 <tbody>
                                     {detail.recommendation.skillNotes.map((note) => {
                                         const skillDetail = detail.skillBreakdown.find(
-                                            (s) => s.skill_name === note.skill
+                                            (s) => s.skill === note.skill
                                         );
                                         return (
                                             <tr key={note.skill}>
@@ -96,7 +77,7 @@ export default function CandidateDetailModal({ resumeId, onClose }) {
                                                 </td>
                                                 <td>{note.note}</td>
                                                 <td className="evidence-cell">
-                                                    {skillDetail?.matched_text_snippet || '-'}
+                                                    {skillDetail?.snippet || '-'}
                                                 </td>
                                             </tr>
                                         );

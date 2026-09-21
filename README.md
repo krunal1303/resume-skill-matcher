@@ -5,8 +5,9 @@ tech skills using semantic similarity (embeddings) — not keyword matching.
 
 ## Stack
 
-- **Backend:** Node.js, Express, MySQL, Multer (file upload)
-- **Frontend:** React (Vite)
+- **Backend:** Node.js, Express, Multer (file upload) — stateless, no database
+- **Frontend:** React (Vite), storing jobs and results in the browser's
+  `localStorage`
 - **AI component:** [`@xenova/transformers`](https://github.com/xenova/transformers.js)
   running the `Xenova/all-MiniLM-L6-v2` embedding model **locally in Node** —
   free, no API key, no network call per request.
@@ -15,12 +16,12 @@ tech skills using semantic similarity (embeddings) — not keyword matching.
 
 ```bash
 npm install
-cp .env.example .env   # fill in your MySQL credentials
-mysql -u root -p < backend/db/schema.sql   # or run schema.sql via any MySQL client
+cp .env.example .env   # optional: PORT, FRONTEND_URL for CORS in production
 npm start               # backend on http://localhost:5000
 
 cd frontend
 npm install
+cp .env.example .env    # optional: VITE_API_URL if backend isn't on :5000
 npm run dev              # frontend on http://localhost:5173
 ```
 
@@ -89,11 +90,23 @@ npm test
   strong, specific match with the rest of an unrelated resume, and lets the
   UI point to the exact line that matched.
 
-- **Why the raw uploaded file is never persisted:** only the *extracted
-  text* and the *resulting scores* are written to MySQL. The uploaded file
-  is written to a temp `backend/uploads/` folder only long enough for the
-  extraction module to read it, then deleted — in a `finally` block, so it's
-  deleted even if extraction or scoring throws partway through.
+- **Why the raw uploaded file is never persisted:** the backend is
+  stateless — `POST /api/resumes/score` extracts text, scores it, and
+  returns the full result without writing anything server-side. The
+  uploaded file is written to a temp `backend/uploads/` folder only long
+  enough for the extraction module to read it, then deleted — in a
+  `finally` block, so it's deleted even if extraction or scoring throws
+  partway through.
+
+- **Why there's no database:** this is a demo/personal-use build, not a
+  multi-user product — job postings and scored results are stored in the
+  browser's `localStorage` on the frontend instead of a server-side
+  database. The backend never sees a "job" as a persisted concept; the
+  frontend sends the required skills and primary stack directly with each
+  scoring request. Trade-off: results don't survive clearing browser data
+  or switching devices/browsers, and there's no cross-user sharing of
+  results — acceptable for the intended use, but worth knowing before
+  relying on this for anything beyond a demo.
 
 - **Why the mismatch flag exists as a separate signal:** an overall score
   is an average, and averages can hide a real problem — a candidate could
@@ -114,3 +127,24 @@ npm test
   version simple — a textarea a recruiter can paste a list into — rather
   than building a skills taxonomy/autocomplete before the core scoring
   engine was proven out.
+
+## Deployment
+
+**Backend (Render):**
+1. New Web Service → connect this repo.
+2. Root directory: repo root. Build command: `npm install`. Start command:
+   `npm start`.
+3. Environment variable: `FRONTEND_URL` = your deployed Vercel URL (once you
+   have it), to lock CORS down from the wide-open local-dev default.
+4. Note: the free tier has an ephemeral filesystem and ~512MB RAM. That's
+   fine here since nothing is persisted to disk beyond the lifetime of a
+   single request. OCR fallback for scanned PDFs requires the `poppler-utils`
+   system binary, which isn't present on Render's default Node image —
+   direct-text PDFs and DOCX files work regardless; OCR fallback for scanned
+   PDFs will fail until that's addressed (e.g. a custom Docker image).
+
+**Frontend (Vercel):**
+1. New Project → connect this repo, set root directory to `frontend/`.
+2. Framework preset: Vite (auto-detected). Build command `npm run build`,
+   output directory `dist`.
+3. Environment variable: `VITE_API_URL` = your deployed Render backend URL.

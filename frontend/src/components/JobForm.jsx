@@ -1,28 +1,18 @@
 import { useState } from 'react';
-import { createJob } from '../api';
+import { createJob } from '../storage';
 
 export default function JobForm({ onJobCreated }) {
     const [title, setTitle] = useState('');
     const [primaryStack, setPrimaryStack] = useState('');
     const [skills, setSkills] = useState('');
-    const [error, setError] = useState(null);
-    const [submitting, setSubmitting] = useState(false);
 
-    async function handleSubmit(e) {
+    function handleSubmit(e) {
         e.preventDefault();
-        setError(null);
-        setSubmitting(true);
-        try {
-            const job = await createJob({ title, primaryStack, skills });
-            setTitle('');
-            setPrimaryStack('');
-            setSkills('');
-            onJobCreated(job);
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setSubmitting(false);
-        }
+        const job = createJob({ title, primaryStack, skills });
+        setTitle('');
+        setPrimaryStack('');
+        setSkills('');
+        onJobCreated(job);
     }
 
     return (
@@ -53,11 +43,7 @@ export default function JobForm({ onJobCreated }) {
                 />
             </label>
 
-            {error && <p className="error">{error}</p>}
-
-            <button type="submit" disabled={submitting}>
-                {submitting ? 'Creating...' : 'Create Job'}
-            </button>
+            <button type="submit">Create Job</button>
         </form>
     );
 }

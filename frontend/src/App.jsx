@@ -1,9 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import JobForm from './components/JobForm';
 import ResumeUpload from './components/ResumeUpload';
 import ResultsTable from './components/ResultsTable';
 import CandidateDetailModal from './components/CandidateDetailModal';
-import { getJobs, getResumesForJob } from './api';
+import { getJobs, getResumesForJob, addResumeResult } from './storage';
 import './App.css';
 
 export default function App() {
@@ -12,35 +12,22 @@ export default function App() {
     const [resumes, setResumes] = useState([]);
     const [viewingResumeId, setViewingResumeId] = useState(null);
 
-    const refreshJobs = useCallback(async () => {
-        const data = await getJobs();
-        setJobs(data);
-    }, []);
-
-    const refreshResumes = useCallback(async (jobId) => {
-        if (!jobId) {
-            setResumes([]);
-            return;
-        }
-        const data = await getResumesForJob(jobId);
-        setResumes(data);
+    useEffect(() => {
+        setJobs(getJobs());
     }, []);
 
     useEffect(() => {
-        refreshJobs();
-    }, [refreshJobs]);
-
-    useEffect(() => {
-        refreshResumes(selectedJobId);
-    }, [selectedJobId, refreshResumes]);
+        setResumes(selectedJobId ? getResumesForJob(selectedJobId) : []);
+    }, [selectedJobId]);
 
     function handleJobCreated(job) {
-        refreshJobs();
+        setJobs(getJobs());
         setSelectedJobId(String(job.id));
     }
 
-    function handleScored() {
-        refreshResumes(selectedJobId);
+    function handleScored(jobId, result) {
+        addResumeResult(jobId, result);
+        setResumes(getResumesForJob(selectedJobId));
     }
 
     return (
@@ -62,6 +49,7 @@ export default function App() {
 
             {viewingResumeId && (
                 <CandidateDetailModal
+                    jobId={selectedJobId}
                     resumeId={viewingResumeId}
                     onClose={() => setViewingResumeId(null)}
                 />

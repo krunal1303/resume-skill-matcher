@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { uploadResume } from '../api';
+import { scoreResume } from '../api';
 
 export default function ResumeUpload({ jobs, selectedJobId, onJobIdChange, onScored }) {
     const [file, setFile] = useState(null);
@@ -9,16 +9,22 @@ export default function ResumeUpload({ jobs, selectedJobId, onJobIdChange, onSco
 
     async function handleSubmit(e) {
         e.preventDefault();
-        if (!file || !selectedJobId) return;
+        const job = jobs.find((j) => String(j.id) === String(selectedJobId));
+        if (!file || !job) return;
 
         setError(null);
         setSubmitting(true);
         try {
-            const result = await uploadResume({ file, jobId: selectedJobId, candidateName });
+            const result = await scoreResume({
+                file,
+                candidateName,
+                primaryStack: job.primaryStack,
+                requiredSkills: job.skills,
+            });
             setFile(null);
             setCandidateName('');
             e.target.reset();
-            onScored(result);
+            onScored(job.id, result);
         } catch (err) {
             setError(err.message);
         } finally {

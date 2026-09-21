@@ -17,7 +17,6 @@
     "express": "^4.19.2",
     "mammoth": "^1.12.3",
     "multer": "^1.4.5-lts.1",
-    "mysql2": "^3.10.0",
     "pdf-parse": "^1.1.1",
     "pdf-poppler": "^0.2.3",
     "tesseract.js": "^7.0.0"

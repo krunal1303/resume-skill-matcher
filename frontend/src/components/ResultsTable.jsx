@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react';
 
 const SORT_FIELDS = {
-    score: (r) => r.overall_score,
-    name: (r) => r.candidate_name || '',
-    date: (r) => r.created_at,
+    score: (r) => r.overallScore,
+    name: (r) => r.candidateName || '',
+    date: (r) => r.scoredAt,
 };
 
 export default function ResultsTable({ resumes, onViewCandidate }) {
@@ -50,24 +50,24 @@ export default function ResultsTable({ resumes, onViewCandidate }) {
             <tbody>
                 {sortedResumes.map((resume) => (
                     <tr key={resume.id}>
-                        <td>{resume.candidate_name || '(unnamed)'}</td>
-                        <td>{(resume.overall_score * 100).toFixed(0)}%</td>
+                        <td>{resume.candidateName || '(unnamed)'}</td>
+                        <td>{(resume.overallScore * 100).toFixed(0)}%</td>
                         <td>
-                            {resume.primary_stack_mismatch ? (
+                            {resume.primaryStackMismatch ? (
                                 <span className="flag flag-warning">Stack mismatch</span>
                             ) : (
                                 'OK'
                             )}
                         </td>
                         <td>
-                            {resume.extraction_confidence !== 'high' && (
+                            {resume.extractionConfidence !== 'high' && (
                                 <span className="flag flag-warning">
-                                    Low confidence ({resume.extraction_confidence})
+                                    Low confidence ({resume.extractionConfidence})
                                 </span>
                             )}
-                            {resume.extraction_confidence === 'high' && 'OK'}
+                            {resume.extractionConfidence === 'high' && 'OK'}
                         </td>
-                        <td>{new Date(resume.created_at).toLocaleDateString()}</td>
+                        <td>{new Date(resume.scoredAt).toLocaleDateString()}</td>
                         <td>
                             <button onClick={() => onViewCandidate(resume.id)}>View</button>
                         </td>

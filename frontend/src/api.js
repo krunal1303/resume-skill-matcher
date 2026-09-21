@@ -1,39 +1,19 @@
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api`;
 
-async function request(path, options) {
-    const res = await fetch(`${API_BASE}${path}`, options);
+// The only server call: extraction + embedding-based scoring is real work
+// that has to happen in Node. Everything else (jobs, results) lives in
+// localStorage - see storage.js.
+export async function scoreResume({ file, candidateName, primaryStack, requiredSkills }) {
+    const formData = new FormData();
+    formData.append('resume', file);
+    if (candidateName) formData.append('candidateName', candidateName);
+    formData.append('primaryStack', primaryStack);
+    formData.append('requiredSkills', JSON.stringify(requiredSkills));
+
+    const res = await fetch(`${API_BASE}/resumes/score`, { method: 'POST', body: formData });
     const data = await res.json();
     if (!res.ok) {
         throw new Error(data.error || 'Request failed');
     }
     return data;
-}
-
-export function createJob({ title, primaryStack, skills }) {
-    return request('/jobs', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, primaryStack, skills }),
-    });
-}
-
-export function getJobs() {
-    return request('/jobs');
-}
-
-export function uploadResume({ file, jobId, candidateName }) {
-    const formData = new FormData();
-    formData.append('resume', file);
-    formData.append('jobId', jobId);
-    if (candidateName) formData.append('candidateName', candidateName);
-
-    return request('/resumes', { method: 'POST', body: formData });
-}
-
-export function getResumesForJob(jobId) {
-    return request(`/resumes?jobId=${jobId}`);
-}
-
-export function getResumeDetail(resumeId) {
-    return request(`/resumes/${resumeId}`);
 }
