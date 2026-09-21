@@ -1,0 +1,14 @@
+node_modules/
+**/node_modules/
+.env
+**/.env
+*.log
+
+# @xenova/transformers downloads embedding model weights here on first run
+.cache/
+
+# never persist uploaded resumes (see Design Decisions in README)
+backend/uploads/
+
+# Vite build output
+frontend/dist/

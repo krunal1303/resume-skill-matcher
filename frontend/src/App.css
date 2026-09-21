@@ -1,0 +1,169 @@
+.app {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.panels {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+form {
+    flex: 1;
+    min-width: 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1.25rem;
+}
+
+label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.9rem;
+}
+
+input,
+textarea,
+select {
+    padding: 0.5rem;
+    font-size: 1rem;
+}
+
+textarea {
+    min-height: 4rem;
+}
+
+button {
+    padding: 0.6rem;
+    cursor: pointer;
+}
+
+.error {
+    color: #b00020;
+    font-size: 0.9rem;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    text-align: left;
+    padding: 0.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+thead th {
+    cursor: pointer;
+    user-select: none;
+}
+
+.flag {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+.flag-warning {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.skill-breakdown {
+    padding: 0.5rem 1rem;
+    background: #fafafa;
+}
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    z-index: 100;
+}
+
+.modal-panel {
+    background: #fff;
+    border-radius: 8px;
+    padding: 2rem;
+    max-width: 800px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    padding: 0.25rem 0.5rem;
+}
+
+.verdict-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 6px;
+    margin: 1rem 0;
+    font-size: 1.1rem;
+}
+
+.verdict-strong {
+    background: #d4edda;
+    color: #155724;
+}
+
+.verdict-borderline {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.verdict-weak {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.caveat-list {
+    color: #856404;
+}
+
+.score-bar-track {
+    display: inline-block;
+    width: 80px;
+    height: 8px;
+    background: #eee;
+    border-radius: 4px;
+    overflow: hidden;
+    vertical-align: middle;
+    margin-right: 0.5rem;
+}
+
+.score-bar-fill {
+    height: 100%;
+    background: #4a90d9;
+}
+
+.evidence-cell {
+    font-style: italic;
+    color: #555;
+    font-size: 0.9rem;
+}
