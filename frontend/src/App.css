@@ -167,3 +167,58 @@ thead th {
     color: #555;
     font-size: 0.9rem;
 }
+
+.top-nav {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 0.75rem;
+}
+
+.top-nav a {
+    text-decoration: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+
+.top-nav a.active {
+    font-weight: 600;
+    background: #eef;
+}
+
+.privacy-note {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.check-list {
+    list-style: none;
+    padding: 0;
+}
+
+.check-list li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+.check-list li.pass {
+    color: #1a7f37;
+}
+
+.check-list li.fail {
+    color: #b42318;
+}
+
+.check-list .hint {
+    color: #444;
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+}
+
+.check-list .excerpt {
+    color: #888;
+    font-size: 0.8rem;
+    font-family: monospace;
+    margin-top: 0.25rem;
+}

@@ -42,7 +42,7 @@ async function ocrPdfPages(filePath) {
     // via pdf-poppler, then OCR'd each image with Tesseract.
     throw new Error(
         "This PDF appears to be scanned/image-based and OCR fallback is currently unavailable. " +
-            "Please upload a PDF with selectable text, or a DOCX file."
+        "Please upload a PDF with selectable text, or a DOCX file."
     );
 }
 

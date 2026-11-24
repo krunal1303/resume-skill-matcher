@@ -1,23 +1,11 @@
 const express = require('express');
-const multer = require('multer');
 const fs = require('fs');
-const path = require('path');
 const { extractResumeText } = require('../services/textExtraction/extractResumeText');
 const { scoreResume } = require('../services/scoringEngine');
 const { generateRecommendation } = require('../services/recommendationEngine');
+const upload = require('../middleware/upload');
 
 const router = express.Router();
-
-// multer's default disk storage drops the original extension; the extraction
-// module dispatches on file extension (.pdf vs .docx), so we must preserve it.
-const storage = multer.diskStorage({
-    destination: 'backend/uploads/',
-    filename: (req, file, cb) => {
-        const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(file.originalname)}`;
-        cb(null, uniqueName);
-    },
-});
-const upload = multer({ storage });
 
 // POST /api/resumes/score - stateless: extract + score a resume against
 // skills/primaryStack supplied directly in the request. Nothing is persisted

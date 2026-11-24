@@ -4,6 +4,7 @@ const fs = require('fs');
 require('dotenv').config();
 
 const resumesRouter = require('./routes/resumes');
+const candidateRouter = require('./routes/candidate');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -18,6 +19,7 @@ app.use(cors(allowedOrigins ? { origin: allowedOrigins } : undefined));
 app.use(express.json());
 
 app.use('/api/resumes', resumesRouter);
+app.use('/api/candidate', candidateRouter);
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
